@@ -16,6 +16,7 @@ public class Part1_Deployment {
     @Autowired
     private RepositoryService repositoryService;
 
+    // 通过bpmn部署流程
     @Test
     public void initDeploymentBPMN(){
         String filename = "BPMN/Part1_Deployment.bpmn";
@@ -29,6 +30,7 @@ public class Part1_Deployment {
         System.out.println(deployment.getName());
     }
 
+    // 通过ZIP部署流程
     @Test
     public void initDeploymentZIP(){
 
@@ -45,7 +47,7 @@ public class Part1_Deployment {
         System.out.println(deployment.getName());
     }
 
-
+    // 查询流程部署
     @Test
     public void getDeployments(){
         List<Deployment> list = repositoryService.createDeploymentQuery().list();
