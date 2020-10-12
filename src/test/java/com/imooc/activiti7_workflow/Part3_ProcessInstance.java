@@ -21,7 +21,9 @@ public class Part3_ProcessInstance {
         // 2.fromData 写入业务表,返回业务表主键ID == businessKey
         // 3.把业务数据与Activiti7流程数据关联
         ProcessInstance processInstance =
-                runtimeService.startProcessInstanceByKey("myProcess_Part1","bKey001"); //bpmn 里面的Id
+                runtimeService.startProcessInstanceByKey(
+                        "myProcess_UEL_V2",  //bpmn 里面的Id
+                        "bKeyUEL_V2");
         System.out.println("流程实例ID:" + processInstance.getProcessDefinitionId());
 
     }

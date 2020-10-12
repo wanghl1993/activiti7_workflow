@@ -19,12 +19,12 @@ public class Part1_Deployment {
     // 通过bpmn部署流程
     @Test
     public void initDeploymentBPMN(){
-        String filename = "BPMN/Part1_Deployment.bpmn";
+        String filename = "BPMN/Part7_Inclusive.bpmn";
         //String pngname = "BPMN/Part1_Deployment.png";
         Deployment deployment = repositoryService.createDeployment()
                 .addClasspathResource(filename)
                 //.addClasspathResource(pngname)  //图片
-                .name("流程部署测试BPMN_V2")
+                .name("流程部署测试包含网关")
                 .deploy();
 
         System.out.println(deployment.getName());
