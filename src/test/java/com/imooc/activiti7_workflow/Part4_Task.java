@@ -30,7 +30,7 @@ public class Part4_Task {
     @Test
     public void getTasksByAssignee(){
         List<Task> list = taskService.createTaskQuery()
-                .taskAssignee("bajie")
+                .taskAssignee("wukong")
 //                .taskCandidateUser("")    activiti7 会报用户未登录,
                 .list();
         for (Task tk : list) {

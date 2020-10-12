@@ -32,12 +32,12 @@ import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
 
-@Configuration
+//@Configuration
 public class DemoApplicationConfiguration {
 
     private Logger logger = LoggerFactory.getLogger(DemoApplicationConfiguration.class);
 
-    @Bean
+//    @Bean
     public UserDetailsService myUserDetailsService() {
 
         InMemoryUserDetailsManager inMemoryUserDetailsManager = new InMemoryUserDetailsManager();
