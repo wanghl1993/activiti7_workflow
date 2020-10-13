@@ -27,10 +27,7 @@ public class ProcessDefinitionController {
     // 添加流程定义通过上传bpmn
     @PostMapping(value = "/uploadStreamAndDeployment")
     public AjaxResponse uploadStreamAndDeployment(@RequestParam("processFile") MultipartFile multipartFile,
-                                                  @RequestParam("processName") String processName){
-
-
-        List<HashMap<String, Object>> listMap = new ArrayList<HashMap<String, Object>>();
+                                                  @RequestParam("deploymentName") String deploymentName){
 
         try {
             // 获取上传文件名
@@ -45,13 +42,13 @@ public class ProcessDefinitionController {
                 ZipInputStream zip = new ZipInputStream(fileInputStream);
                 deployment = repositoryService.createDeployment() // 初始化部署
                         .addZipInputStream(zip)
-                        .name(processName)
+                        .name(deploymentName)
                         .deploy();
 
             } else {
                 deployment = repositoryService.createDeployment()
                         .addInputStream(fileName, fileInputStream)
-                        .name(processName)
+                        .name(deploymentName)
                         .deploy();
             }
 
@@ -71,9 +68,29 @@ public class ProcessDefinitionController {
 
 
     // 添加流程定义在线提交BPMN的XML
+    @PostMapping(value = "/addDeploymentByString")
+    public AjaxResponse addDeploymentByString(@RequestParam("stringBPMN") String stringBPMN,
+                                                  @RequestParam("deploymentName") String deploymentName){
 
+        try {
+            Deployment deployment = repositoryService.createDeployment()
+                    .addString("CreateWithBPMNJS.bpmn",stringBPMN)
+                    .name(deploymentName)
+                    .deploy();
 
-
+            return AjaxResponse.AjaxData(
+                    GlobalConfig.ResponseCode.SUCCESS.getCode(),
+                    GlobalConfig.ResponseCode.SUCCESS.getDesc(),
+                    deployment.getId()
+            );
+        } catch (Exception e){
+            return AjaxResponse.AjaxData(
+                    GlobalConfig.ResponseCode.ERROR.getCode(),
+                    "string部署流程失败",
+                    e.toString()
+            );
+        }
+    }
 
     // 获取流程定义列表
     @GetMapping(value = "/getDefinitions")
