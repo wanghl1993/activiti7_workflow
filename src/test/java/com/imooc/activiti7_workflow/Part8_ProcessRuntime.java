@@ -82,7 +82,7 @@ public class Part8_ProcessRuntime {
 
     // 激活流程实例
     @Test
-    public void activitiProcessInstance(){
+    public void resumeProcessInstance(){
         securityUtil.logInAs("bajie");
         ProcessInstance processInstance = processRuntime.resume(ProcessPayloadBuilder
                 .resume()
