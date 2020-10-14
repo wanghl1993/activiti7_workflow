@@ -11,6 +11,9 @@ import org.activiti.api.runtime.shared.query.Pageable;
 import org.activiti.api.task.model.Task;
 import org.activiti.api.task.model.builders.TaskPayloadBuilder;
 import org.activiti.api.task.runtime.TaskRuntime;
+import org.activiti.bpmn.model.FormProperty;
+import org.activiti.bpmn.model.UserTask;
+import org.activiti.engine.RepositoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,6 +36,9 @@ public class TaskController {
 
     @Autowired
     private ProcessRuntime processRuntime;
+
+    @Autowired
+    private RepositoryService repositoryService;
 
     // 获取我的待办任务
     @GetMapping(value = "/getTasks")
@@ -117,5 +123,45 @@ public class TaskController {
 
 
     // 渲染动态表单
+    @GetMapping(value = "/formDataShow")
+    public AjaxResponse formDataShow(@RequestParam("taskID") String taskID) {
+        try {
+            if(GlobalConfig.Test){  //登录存在securtity框架里
+                securityUtil.logInAs("bajie");
+            }
+
+            Task task = taskRuntime.task(taskID);
+
+            UserTask userTask = (UserTask)repositoryService.getBpmnModel(task.getProcessDefinitionId())
+                    .getFlowElement(task.getFormKey());
+
+            if(userTask == null){
+                return AjaxResponse.AjaxData(
+                        GlobalConfig.ResponseCode.SUCCESS.getCode(),
+                        GlobalConfig.ResponseCode.SUCCESS.getDesc(),
+                        "无表单"
+                );
+            }
+
+            List<FormProperty> formProperties = userTask.getFormProperties();
+            for (FormProperty fp : formProperties) {
+//                fp.get
+            }
+
+            return AjaxResponse.AjaxData(
+                    GlobalConfig.ResponseCode.SUCCESS.getCode(),
+                    GlobalConfig.ResponseCode.SUCCESS.getDesc(),
+                    null
+            );
+        } catch (Exception e) {
+            return AjaxResponse.AjaxData(
+                    GlobalConfig.ResponseCode.ERROR.getCode(),
+                    "任务表单渲染失败",
+                    e.toString()
+            );
+        }
+    }
+
+
     // 保存动态表单
 }
