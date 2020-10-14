@@ -6,7 +6,8 @@ spring:
   datasource:
     username: root
     password: root
-    url: jdbc:mysql://127.0.0.1:3306/activiti?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=UTC&nullCatalogMeansCurrent=true
+#    url: jdbc:mysql://127.0.0.1:3306/activiti?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=UTC&nullCatalogMeansCurrent=true
+    url: jdbc:mysql://172.17.8.102:3306/activiti?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=UTC&nullCatalogMeansCurrent=true
     driver-class-name: com.mysql.cj.jdbc.Driver
 # Activiti7 历史表创建
 spring.activiti.history-level: full

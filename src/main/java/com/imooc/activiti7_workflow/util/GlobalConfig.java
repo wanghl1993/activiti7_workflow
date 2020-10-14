@@ -3,7 +3,7 @@ package com.imooc.activiti7_workflow.util;
 
 public class GlobalConfig {
 
-    public static final Boolean Test = true;
+    public static final Boolean Test = false;    //不需要调用登录接口
 
     public enum ResponseCode {
         SUCCESS(0,"成功"),

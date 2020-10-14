@@ -2,7 +2,6 @@ package com.imooc.activiti7_workflow.controller;
 
 import com.imooc.activiti7_workflow.util.AjaxResponse;
 import com.imooc.activiti7_workflow.util.GlobalConfig;
-import com.sun.org.apache.xml.internal.utils.Hashtree2Node;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.repository.ProcessDefinition;
@@ -108,11 +107,11 @@ public class ProcessDefinitionController {
             for (ProcessDefinition pd : list) {
                 HashMap<String, Object> hashMap = new HashMap<>();
 
-                hashMap.put("Name", pd.getName());
-                hashMap.put("Key", pd.getKey());
-                hashMap.put("ResourceName", pd.getResourceName());
-                hashMap.put("DeploymentId", pd.getDeploymentId());
-                hashMap.put("Version", pd.getVersion());
+                hashMap.put("name", pd.getName());
+                hashMap.put("key", pd.getKey());
+                hashMap.put("resourceName", pd.getResourceName());
+                hashMap.put("deploymentId", pd.getDeploymentId());
+                hashMap.put("version", pd.getVersion());
 
                 System.out.println("Name:" + pd.getName());
                 System.out.println("Key:" + pd.getKey());
