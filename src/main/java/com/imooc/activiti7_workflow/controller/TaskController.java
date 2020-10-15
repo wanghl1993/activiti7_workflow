@@ -44,22 +44,22 @@ public class TaskController {
     @GetMapping(value = "/getTasks")
     public AjaxResponse getTasks() {
         try {
-            if(GlobalConfig.Test){  //登录存在securtity框架里
+            if (GlobalConfig.Test) {  //登录存在securtity框架里
                 securityUtil.logInAs("bajie");
             }
             // 先获取用户名, 再把用户名当做当前任务来操作shiro
-            Page<Task> taskPage = taskRuntime.tasks(Pageable.of(0,100));
+            Page<Task> taskPage = taskRuntime.tasks(Pageable.of(0, 100));
             List<HashMap<String, Object>> listMap = new ArrayList<HashMap<String, Object>>();
 
             for (Task tk : taskPage.getContent()) {
                 HashMap<String, Object> hashMap = new HashMap<>();
 
-                hashMap.put("id",tk.getId());
-                hashMap.put("name",tk.getName());
-                hashMap.put("status",tk.getStatus());
-                hashMap.put("createdDate",tk.getCreatedDate());
-                hashMap.put("assignee",tk.getAssignee());
-                if(tk.getAssignee() == null){
+                hashMap.put("id", tk.getId());
+                hashMap.put("name", tk.getName());
+                hashMap.put("status", tk.getStatus());
+                hashMap.put("createdDate", tk.getCreatedDate());
+                hashMap.put("assignee", tk.getAssignee());
+                if (tk.getAssignee() == null) {
                     hashMap.put("assignee", "待拾取任务");
                 } else {
                     hashMap.put("assignee", tk.getAssignee());
@@ -67,7 +67,7 @@ public class TaskController {
 
                 ProcessInstance processInstance =
                         processRuntime.processInstance(tk.getProcessInstanceId());
-                hashMap.put("instanceName",processInstance.getName());
+                hashMap.put("instanceName", processInstance.getName());
 
                 listMap.add(hashMap);
             }
@@ -89,22 +89,22 @@ public class TaskController {
     @GetMapping(value = "/completeTask")
     public AjaxResponse completeTask(@RequestParam("taskID") String taskID) {
         try {
-            if(GlobalConfig.Test){  //登录存在securtity框架里
+            if (GlobalConfig.Test) {  //登录存在securtity框架里
                 securityUtil.logInAs("bajie");
             }
 
             Task task = taskRuntime.task(taskID);
 
-            if(task.getAssignee() == null){
+            if (task.getAssignee() == null) {
                 taskRuntime.claim(TaskPayloadBuilder.claim()
                         .withTaskId(taskID)
                         .build()
                 );
             }
             taskRuntime.complete(TaskPayloadBuilder.complete()
-                    .withTaskId(task.getId())
+                            .withTaskId(task.getId())
 //                    .withVariable("num","2")
-                    .build()
+                            .build()
             );
 
             return AjaxResponse.AjaxData(
@@ -126,16 +126,16 @@ public class TaskController {
     @GetMapping(value = "/formDataShow")
     public AjaxResponse formDataShow(@RequestParam("taskID") String taskID) {
         try {
-            if(GlobalConfig.Test){  //登录存在securtity框架里
+            if (GlobalConfig.Test) {  //登录存在securtity框架里
                 securityUtil.logInAs("bajie");
             }
 
             Task task = taskRuntime.task(taskID);
 
-            UserTask userTask = (UserTask)repositoryService.getBpmnModel(task.getProcessDefinitionId())
+            UserTask userTask = (UserTask) repositoryService.getBpmnModel(task.getProcessDefinitionId())
                     .getFlowElement(task.getFormKey());
 
-            if(userTask == null){
+            if (userTask == null) {
                 return AjaxResponse.AjaxData(
                         GlobalConfig.ResponseCode.SUCCESS.getCode(),
                         GlobalConfig.ResponseCode.SUCCESS.getDesc(),
@@ -144,14 +144,23 @@ public class TaskController {
             }
 
             List<FormProperty> formProperties = userTask.getFormProperties();
+            List<HashMap<String, Object>> listMap = new ArrayList<HashMap<String, Object>>();
             for (FormProperty fp : formProperties) {
-//                fp.get
+                String[] splitFP = fp.getId().split("-_!");
+                HashMap<String, Object> hashMap = new HashMap<>();
+                hashMap.put("id", splitFP[0]);
+                hashMap.put("controlType", splitFP[1]);
+                hashMap.put("controlLable", splitFP[2]);
+                hashMap.put("controlDefvalue", splitFP[3]);
+                hashMap.put("controlParam", splitFP[4]);
+
+                listMap.add(hashMap);
             }
 
             return AjaxResponse.AjaxData(
                     GlobalConfig.ResponseCode.SUCCESS.getCode(),
                     GlobalConfig.ResponseCode.SUCCESS.getDesc(),
-                    null
+                    listMap
             );
         } catch (Exception e) {
             return AjaxResponse.AjaxData(
