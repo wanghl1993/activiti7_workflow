@@ -135,6 +135,16 @@ public class TaskController {
 
             Task task = taskRuntime.task(taskID);
 
+            // ----- 构建表单控件历史数据字典
+            HashMap<String, String> controlListMap = new HashMap<String, String>();
+            // 读取数据库本实例下所有的表单数据
+            List<HashMap<String, String>> tempControlList = mapper.selectFormData(task.getProcessInstanceId());
+
+            for (HashMap<String, String> ls : tempControlList) {
+                controlListMap.put(ls.get("Control_ID_").toString(),ls.get("Control_VALUE_").toString());
+            }
+
+
             UserTask userTask = (UserTask) repositoryService.getBpmnModel(task.getProcessDefinitionId())
                     .getFlowElement(task.getFormKey());
 
@@ -154,7 +164,21 @@ public class TaskController {
                 hashMap.put("id", splitFP[0]);
                 hashMap.put("controlType", splitFP[1]);
                 hashMap.put("controlLable", splitFP[2]);
-                hashMap.put("controlDefvalue", splitFP[3]);
+//                hashMap.put("controlDefvalue", splitFP[3]);
+                // 如果默认值是表单控件ID
+                if(splitFP[3].startsWith("FormProperty_")){ // FormProperty_开头说明想读取之前的值
+
+                    if(controlListMap.containsKey(splitFP[3])){
+                        hashMap.put("controlDefvalue", controlListMap.get(splitFP[3]));
+                    } else {
+                        hashMap.put("controlDefvalue", "读取失败,检查"+splitFP[0]+"配置");
+                    }
+
+                } else {
+                    hashMap.put("controlDefvalue", splitFP[3]);
+                }
+
+
                 hashMap.put("controlParam", splitFP[4]);
 
                 listMap.add(hashMap);

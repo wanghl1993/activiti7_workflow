@@ -3,6 +3,7 @@ package com.imooc.activiti7_workflow.mapper;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
@@ -11,6 +12,10 @@ import java.util.List;
 @Mapper
 @Component
 public interface ActivitiMapper {
+
+    // 读取表单
+    @Select("select Control_ID_,Control_VALUE_ from formData where PROC_INST_ID_ = #{PROC_INST_ID_}")
+    List<HashMap<String, String>> selectFormData(@Param("PROC_INST_ID_") String PROC_INST_ID_);
 
     @Insert("<script> insert into formdata (PROC_DEF_ID_,PROC_INST_ID_,FORM_KEY_,Control_ID_,Control_VALUE_)" +
             " VALUES" +
