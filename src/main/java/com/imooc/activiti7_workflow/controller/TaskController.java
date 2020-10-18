@@ -1,6 +1,7 @@
 package com.imooc.activiti7_workflow.controller;
 
 import com.imooc.activiti7_workflow.SecurityUtil;
+import com.imooc.activiti7_workflow.mapper.ActivitiMapper;
 import com.imooc.activiti7_workflow.pojo.UserInfoBean;
 import com.imooc.activiti7_workflow.util.AjaxResponse;
 import com.imooc.activiti7_workflow.util.GlobalConfig;
@@ -14,12 +15,11 @@ import org.activiti.api.task.runtime.TaskRuntime;
 import org.activiti.bpmn.model.FormProperty;
 import org.activiti.bpmn.model.UserTask;
 import org.activiti.engine.RepositoryService;
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -39,6 +39,9 @@ public class TaskController {
 
     @Autowired
     private RepositoryService repositoryService;
+
+    @Autowired
+    private ActivitiMapper mapper;
 
     // 获取我的待办任务
     @GetMapping(value = "/getTasks")
@@ -173,4 +176,88 @@ public class TaskController {
 
 
     // 保存动态表单
+    @PostMapping(value = "/formDataSave")
+    public AjaxResponse formDataSave(@RequestParam("taskID") String taskID,
+                                     @RequestParam("formData") String formData) {
+        try {
+            if (GlobalConfig.Test) {  //登录存在securtity框架里
+                securityUtil.logInAs("bajie");
+            }
+
+            Task task = taskRuntime.task(taskID);
+
+            HashMap<String, Object> variables = new HashMap<String, Object>();
+            Boolean hasVariables = false;
+
+            List<HashMap<String, Object>> listMap = new ArrayList<HashMap<String, Object>>();
+
+            // 前端传来的字符串拆分为控件组
+            String[] formDataList = formData.split("!_!");
+            for (String controlItem : formDataList) {
+                String[] formDataItem = controlItem.split("-_!");
+                HashMap<String, Object> hashMap = new HashMap<>();
+
+                hashMap.put("PROC_DEF_ID_", task.getProcessDefinitionId());
+                hashMap.put("PROC_INST_ID_", task.getProcessInstanceId());
+                hashMap.put("FORM_KEY_", task.getFormKey());
+
+                hashMap.put("Control_ID_", formDataItem[0]);
+                hashMap.put("Control_VALUE_", formDataItem[1]);
+                //hashMap.put("Control_PARAM_", formDataItem[2]);
+
+                listMap.add(hashMap);
+
+                // 构建参数集合
+                switch (formDataItem[2]) {
+                    case "f":
+                        System.out.println("控件值不作为参数");
+                        break;
+                    case "s":
+                        variables.put(formDataItem[0], formDataItem[1]);
+                        hasVariables = true;
+                        break;
+                    case "t":
+                        SimpleDateFormat timeFormat = new SimpleDateFormat("YYYY-MM-dd HH:mm");
+                        variables.put(formDataItem[0], timeFormat.parse(formDataItem[1]));
+                        hasVariables = true;
+                        break;
+                    case "b":
+                        variables.put(formDataItem[0], BooleanUtils.toBoolean(formDataItem[1]));
+                        hasVariables = true;
+                        break;
+                    default:
+                        System.out.println("控件ID" + formDataItem[0] + "的参数" + formDataItem[1] + "不存在");
+                }
+
+            }   //for 结束
+
+            if(hasVariables){
+                // 带参数完成任务  taskRuntime赋值会覆盖掉,有意义
+                taskRuntime.complete(TaskPayloadBuilder.complete()
+                        .withTaskId(taskID)
+                        .withVariables(variables)
+                        .build()
+                );
+            } else {
+                taskRuntime.complete(TaskPayloadBuilder.complete()
+                        .withTaskId(taskID)
+                        .build()
+                );
+            }
+
+            int result = mapper.insertFormData(listMap);
+
+            return AjaxResponse.AjaxData(
+                    GlobalConfig.ResponseCode.SUCCESS.getCode(),
+                    GlobalConfig.ResponseCode.SUCCESS.getDesc(),
+                    listMap
+            );
+        } catch (Exception e) {
+            return AjaxResponse.AjaxData(
+                    GlobalConfig.ResponseCode.ERROR.getCode(),
+                    "任务表单提交失败",
+                    e.toString()
+            );
+        }
+    }
 }
