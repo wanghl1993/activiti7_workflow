@@ -88,6 +88,15 @@
   <li class="item download">
     <a class="btn" href id="download_BPMN">亮哥导出</a>  <!-- #### -->
   </li>
+  <li class="item download">
+    <a class="btn" href id="save_BPMN">亮哥部署</a>  <!-- #### -->
+  </li>
+  <li class="item download">
+    <form id="form2" name="myForm2" onsubmit="return false" method="post" enctype="multipart/form-data" title="上传文件">
+      <input type="file" name="uploadFile2" id="uploadFile2" accept=".bpmn" style="display: none" />
+      <label class="label" for="uploadFile2">亮哥导入</label> <!-- #### -->
+    </form>
+  </li>
   <li class="item submit">
     <a class="btn" id="js-download-diagram">
       部署

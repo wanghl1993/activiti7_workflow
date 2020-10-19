@@ -9,6 +9,7 @@ import customTranslate from '../resources/customTranslate/customTranslate';
 import customControlsModule from '../resources/customControls';
 import tools from '../resources/tools'
 import diagramXML from '../resources/newDiagram.bpmn';
+import tool from '../resources/tool'
 const proHost = window.location.protocol + "//" + window.location.host;
 const href = window.location.href.split("bpmnjs")[0];
 const key = href.split(window.location.host)[1];
@@ -18,7 +19,7 @@ const publicurl = proHost + key;
 var customTranslateModule = {
     translate: ['value', customTranslate]
 };
-debugger
+// debugger
 var container = $('#js-drop-zone');
 var canvas = $('#js-canvas');
 var bpmnModeler = new BpmnModeler({
@@ -52,7 +53,7 @@ $(function () {
     if (param.type === 'addBpmn') {
         tools.createDiagram(diagramXML, bpmnModeler, container);
     } else if (param.type === 'lookBpmn') { //编辑bpmn
-        debugger
+        // debugger
         $('.item').hide()
         $('.download').show()
         const Id = param.deploymentFileUUID || '6d4af2dc-bab0-11ea-b584-3cf011eaafca'
@@ -141,4 +142,22 @@ $(function () {
     $("#uploadFile").on("change", function () {
         tools.upload(bpmnModeler,container)
     })
+
+    // 下载BPMN
+    $("#download_BPMN").on('click',function () {
+        tool.downLoad(bpmnModeler);
+    })
+
+    // 部署BPMN
+    $("#save_BPMN").on('click',function () {
+        // alert("3");
+        tool.saveBPMN(bpmnModeler);
+    })
+
+    // 上传BPMN
+    $("#uploadFile2").on('change',function () {
+        // alert("aa");
+        tool.uploadBPMN(bpmnModeler);
+    })
+
 });
