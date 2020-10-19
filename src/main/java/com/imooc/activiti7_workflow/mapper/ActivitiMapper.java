@@ -25,4 +25,9 @@ public interface ActivitiMapper {
             "#{formData.Control_VALUE_,jdbcType=VARCHAR}" +
             ")</foreach> </script>")
     int insertFormData(@Param("maps") List<HashMap<String, Object>> maps);
+
+    // 获取用户列表
+    @Select("select name,username from user")
+    List<HashMap<String, Object>> selectUser();
+
 }
