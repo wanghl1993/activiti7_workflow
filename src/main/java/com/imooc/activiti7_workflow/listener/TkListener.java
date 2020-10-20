@@ -8,4 +8,5 @@ public class TkListener implements TaskListener {
     public void notify(DelegateTask delegateTask) {
         System.out.println("执行人: " + delegateTask.getAssignee());
     }
+
 }
